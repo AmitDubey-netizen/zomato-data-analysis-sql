@@ -1,0 +1,23 @@
+Zomato Data Analysis Questions\
+
+1.Display all records from the Zomato dataset.
+2.Find the rolling/moving count of restaurants in Indian cities.
+3.Find the percentage of restaurants present in all countries.
+4.Find which countries provide online delivery options and calculate the percentage of restaurants offering online delivery.
+5.Find the city and locality in India where the maximum number of restaurants are listed on Zomato.
+6.Find the types of food/cuisines available in the Indian locality where the maximum restaurants are listed.
+7.Find the most popular food/cuisine in the Indian locality having the maximum listed restaurants.
+8.Find the localities in India having the lowest number of restaurants listed on Zomato.
+9.Find how many restaurants offer table booking options in the Indian locality where the maximum restaurants are listed.
+10.Analyze how ratings are affected by table booking options in the locality with the maximum restaurants (Connaught Place).
+11Find the average rating of restaurants locality-wise.
+
+12.Find the best restaurants in India with :
+Indian cuisines
+Moderate cost for two
+Table booking available
+Online delivery available
+High votes
+High ratings
+
+13.Find restaurants offering table booking options along with price range and high ratings.
