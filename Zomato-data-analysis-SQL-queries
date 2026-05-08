@@ -1,0 +1,161 @@
+-- =====================================================
+-- ZOMATO DATA ANALYSIS PROJECT
+-- =====================================================
+
+-- 1. Display all records from the Zomato dataset
+SELECT *
+FROM zomato_dataset;
+
+
+-- 2. Find the rolling/moving count of restaurants in Indian cities
+SELECT
+    City,
+    COUNT(RestaurantID) AS restaurant_count,
+    SUM(COUNT(RestaurantID)) OVER(
+        ORDER BY COUNT(RestaurantID)
+    ) AS rolling_restaurant_count
+FROM zomato_dataset
+WHERE CountryCode = 1
+GROUP BY City;
+
+
+-- 3. Find the percentage of restaurants present in all countries
+SELECT
+    CountryCode,
+    COUNT(*) AS total_restaurants,
+    ROUND(
+        COUNT(*) * 100.0 /
+        (SELECT COUNT(*) FROM zomato_dataset),
+        2
+    ) AS percentage
+FROM zomato_dataset
+GROUP BY CountryCode
+ORDER BY percentage DESC;
+
+
+-- 4. Find countries providing online delivery options and calculate delivery percentage
+SELECT
+    CountryCode,
+    COUNT(*) AS total_restaurants,
+    SUM(CASE
+            WHEN HasOnlineDelivery = 'Yes' THEN 1
+            ELSE 0
+        END) AS online_delivery_restaurants,
+    ROUND(
+        SUM(CASE
+                WHEN HasOnlineDelivery = 'Yes' THEN 1
+                ELSE 0
+            END) * 100.0 / COUNT(*),
+        2
+    ) AS online_delivery_percentage
+FROM zomato_dataset
+GROUP BY CountryCode
+ORDER BY online_delivery_percentage DESC;
+
+
+-- 5. Find the city and locality in India with the maximum restaurants
+SELECT
+    City,
+    Locality,
+    COUNT(RestaurantID) AS total_restaurants
+FROM zomato_dataset
+WHERE CountryCode = 1
+GROUP BY City, Locality
+ORDER BY total_restaurants DESC
+LIMIT 1;
+
+
+-- 6. Find cuisines available in the Indian locality having maximum restaurants
+SELECT DISTINCT Cuisines
+FROM zomato_dataset
+WHERE Locality = 'Connaught Place'
+AND CountryCode = 1;
+
+
+-- 7. Find the most popular cuisine in the locality with maximum restaurants
+SELECT
+    Cuisines,
+    COUNT(*) AS total_restaurants
+FROM zomato_dataset
+WHERE Locality = 'Connaught Place'
+AND CountryCode = 1
+GROUP BY Cuisines
+ORDER BY total_restaurants DESC
+LIMIT 1;
+
+
+-- 8. Find Indian localities with the lowest number of restaurants
+SELECT
+    Locality,
+    COUNT(RestaurantID) AS total_restaurants
+FROM zomato_dataset
+WHERE CountryCode = 1
+GROUP BY Locality
+HAVING COUNT(RestaurantID) > 0
+ORDER BY total_restaurants ASC;
+
+
+-- 9. Find restaurants offering table booking in the locality with maximum restaurants
+SELECT
+    Locality,
+    COUNT(*) AS table_booking_restaurants
+FROM zomato_dataset
+WHERE Locality = 'Connaught Place'
+AND CountryCode = 1
+AND HasTableBooking = 'Yes'
+GROUP BY Locality;
+
+
+-- 10. Analyze ratings impact based on table booking availability
+SELECT
+    HasTableBooking,
+    ROUND(AVG(AggregateRating), 2) AS average_rating,
+    COUNT(*) AS total_restaurants
+FROM zomato_dataset
+WHERE Locality = 'Connaught Place'
+AND CountryCode = 1
+GROUP BY HasTableBooking;
+
+
+-- 11. Find average restaurant ratings locality-wise
+SELECT
+    Locality,
+    ROUND(AVG(AggregateRating), 2) AS average_rating,
+    COUNT(*) AS total_restaurants
+FROM zomato_dataset
+GROUP BY Locality
+ORDER BY average_rating DESC;
+
+
+-- 12. Find best Indian restaurants based on ratings, votes, delivery, and booking
+SELECT
+    RestaurantName,
+    City,
+    Locality,
+    Cuisines,
+    AverageCostForTwo,
+    AggregateRating,
+    Votes
+FROM zomato_dataset
+WHERE CountryCode = 1
+AND Cuisines LIKE '%Indian%'
+AND AverageCostForTwo BETWEEN 500 AND 2000
+AND HasTableBooking = 'Yes'
+AND HasOnlineDelivery = 'Yes'
+AND Votes > 500
+AND AggregateRating >= 4.0
+ORDER BY AggregateRating DESC, Votes DESC;
+
+
+-- 13. Find highly rated restaurants offering table booking
+SELECT
+    RestaurantName,
+    City,
+    Locality,
+    PriceRange,
+    AggregateRating,
+    Votes
+FROM zomato_dataset
+WHERE HasTableBooking = 'Yes'
+AND AggregateRating >= 4.0
+ORDER BY AggregateRating DESC, Votes DESC;
